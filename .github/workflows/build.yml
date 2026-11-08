@@ -49,7 +49,8 @@ jobs:
       # 另外發到 GitHub Release，手機登入 GitHub 後可以直接下載 APK（不用解壓縮、不會過期），再用 LINE 傳給家人。
       # PR：每個 PR 一個固定的「測試版」，每次推送更新成最新的；main：每次發一個新版本。
       - name: 發佈到 GitHub Release
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        # 公開範本本身只檢查能不能編譯，不發 APK（沒有 Firebase 設定，裝了也無法登入）。
+        if: github.repository != 'shishonomisaki/life-manager-public' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
