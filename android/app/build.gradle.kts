@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -22,7 +23,7 @@ android {
     // 簽章金鑰：第一次執行 GitHub Actions「1. 初始化（產生簽章金鑰）」會產生 release.jks 和
     // keystore.properties 並提交到你自己的 private repo。金鑰固定，Firebase 的 SHA-1 只要登記一次。
     // 沒有這兩個檔時改用 Android 預設的 debug 金鑰（每台電腦不同，只適合本機試跑）。
-    val ksProps = java.util.Properties().apply {
+    val ksProps = Properties().apply {
         val f = file("keystore.properties")
         if (f.exists()) f.inputStream().use { load(it) }
     }
