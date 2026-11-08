@@ -1,0 +1,60 @@
+name: 1. 初始化（產生簽章金鑰）
+
+# 只要執行一次。會產生這個 APP 專屬的簽章金鑰並提交進 repo，再把 SHA-1 / SHA-256 指紋
+# 顯示在執行結果的摘要裡，讓你貼到 Firebase。repo 必須是 Private，金鑰才不會外流。
+
+on:
+  workflow_dispatch:
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 確認 repo 是 Private
+        env:
+          PRIVATE: ${{ github.event.repository.private }}
+        run: |
+          if [ "$PRIVATE" != "true" ]; then
+            echo "::error::這個 repo 是公開的。請用「Use this template」建立 Private repo 後再執行，不然簽章金鑰會被任何人看到。"
+            exit 1
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: 產生金鑰（已經有就沿用）
+        working-directory: android/app
+        run: |
+          if [ -f keystore.properties ]; then
+            echo "已經有金鑰，沿用不重產（重產會讓 Firebase 的 SHA-1 對不上）。"
+          else
+            PW=$(openssl rand -hex 16)
+            keytool -genkeypair -v -keystore release.jks -alias lifemanager -keyalg RSA -keysize 2048 \
+              -validity 10000 -storepass "$PW" -keypass "$PW" -dname "CN=life-manager"
+            printf 'storeFile=release.jks\nstorePassword=%s\nkeyAlias=lifemanager\nkeyPassword=%s\n' "$PW" "$PW" > keystore.properties
+            git config user.name "github-actions[bot]"
+            git config user.email "41898799+github-actions[bot]@users.noreply.github.com"
+            git add release.jks keystore.properties
+            git commit -m "產生簽章金鑰"
+            git push
+          fi
+
+      - name: 顯示指紋
+        working-directory: android/app
+        run: |
+          PW=$(grep storePassword keystore.properties | cut -d= -f2)
+          SHA1=$(keytool -list -v -keystore release.jks -alias lifemanager -storepass "$PW" | grep 'SHA1:' | sed 's/.*SHA1: //')
+          SHA256=$(keytool -list -v -keystore release.jks -alias lifemanager -storepass "$PW" | grep 'SHA256:' | sed 's/.*SHA256: //')
+          {
+            echo "## 你的簽章指紋"
+            echo "到 Firebase → 專案設定 → 你的 Android app → 新增指紋，兩個都貼上："
+            echo
+            echo "- SHA-1：\`$SHA1\`"
+            echo "- SHA-256：\`$SHA256\`"
+          } >> "$GITHUB_STEP_SUMMARY"

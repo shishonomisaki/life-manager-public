@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">生活管理</string>
+    <string name="widget_label">快速新增待辦</string>
+    <string name="tile_label">新增待辦</string>
+    <string name="widget_hint">＋ 新增待辦…</string>
+    <string name="share_label">加入待辦</string>
+</resources>
