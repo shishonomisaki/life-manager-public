@@ -51,43 +51,44 @@
 
 ```mermaid
 flowchart LR
-  subgraph 手機
-    APP[生活管理 APP]
-    Alarm[本機鬧鐘<br/>AlarmManager]
-    Speech[本機語音轉文字]
+  subgraph phone["手機"]
+    APP["生活管理 APP"]
+    Alarm["本機鬧鐘 AlarmManager"]
+    Speech["本機語音轉文字"]
   end
-  subgraph 你自己的雲端帳號（免費）
-    FB[(Firebase<br/>Google 登入 + Firestore)]
-    GM[Gemini API<br/>AI 整理]
-    TG[Telegram Bot API<br/>你的 bot]
+  subgraph cloud["你自己的雲端帳號 - 免費方案"]
+    FB[("Firebase：Google 登入 + Firestore")]
+    GM["Gemini API：AI 整理"]
+    TG["Telegram Bot API：你的 bot"]
   end
+  PC["電腦或手機上的 Telegram"]
   Speech --> APP
-  APP <-->|同步待辦| FB
-  APP -->|文字/語音/圖片| GM
-  GM -->|整理好的待辦 JSON| APP
-  APP <-->|getUpdates 拉訊息 / sendMessage 回覆| TG
+  APP <-->|"同步待辦"| FB
+  APP -->|"文字、語音、圖片"| GM
+  GM -->|"整理好的待辦"| APP
+  APP <-->|"拉訊息、回覆"| TG
   APP --> Alarm
-  TG <--> PC[電腦或手機上的 Telegram]
+  TG <--> PC
 ```
 
 ### 一則訊息的處理流程
 
 ```mermaid
 sequenceDiagram
-  participant 你
-  participant TG as Telegram bot
-  participant APP as 手機 APP
-  participant AI as Gemini
-  participant DB as Firestore
-  你->>TG: 轉傳「下週二下午 3 點牙醫，記得帶健保卡」
-  APP->>TG: 拉新訊息（開著時幾乎即時，背景約 15 分鐘一次）
-  APP->>AI: 內容 + 你的主題、專案、標籤、未完成待辦
-  AI-->>APP: 待辦：牙醫｜11/17 15:00｜個人｜子任務：帶健保卡
-  APP->>DB: 存檔
-  APP->>TG: 回覆「已加入」+ 刪除按鈕
-  Note over APP: 到時間時本機鬧鐘響
-  APP->>你: 手機通知
-  APP->>TG: 推送提醒（完成／稍後／更多）
+  participant U as 你
+  participant T as Telegram bot
+  participant A as 手機 APP
+  participant G as Gemini
+  participant D as Firestore
+  U->>T: 轉傳「下週二下午 3 點牙醫，記得帶健保卡」
+  A->>T: 拉新訊息（開著時幾乎即時，背景約 15 分鐘一次）
+  A->>G: 內容 + 你的主題、專案、標籤、未完成待辦
+  G-->>A: 待辦：牙醫 / 11/17 15:00 / 個人 / 子任務：帶健保卡
+  A->>D: 存檔
+  A->>T: 回覆「已加入」+ 刪除按鈕
+  Note over A: 到時間時本機鬧鐘響
+  A->>U: 手機通知
+  A->>T: 推送提醒（完成、稍後、更多）
 ```
 
 ### 程式結構

@@ -13,13 +13,13 @@
 
 ```mermaid
 flowchart TD
-  A[1. 複製 repo 成你自己的 Private repo] --> B[2. 執行「初始化」產生簽章金鑰並拿到 SHA-1]
-  B --> C[3. 建 Firebase 專案、登記 Android app 和 SHA-1]
-  C --> D[4. 把 google-services.json 上傳到你的 repo]
-  D --> E[5. 自動建置 APK，從 Releases 下載安裝]
-  E --> F[6. 用 Google 登入 APP]
-  F --> G[7. 貼上 Gemini API key]
-  G --> H[8. 建 Telegram bot 並連結（選用）]
+  A["1. 複製成你自己的 Private repo"] --> B["2. 執行初始化，產生金鑰、拿到 SHA-1"]
+  B --> C["3. 建 Firebase 專案，登記 Android app 和指紋"]
+  C --> D["4. 上傳 google-services.json"]
+  D --> E["5. 自動建置 APK，從 Releases 下載安裝"]
+  E --> F["6. 用 Google 登入 APP"]
+  F --> G["7. 貼上 Gemini API key"]
+  G --> H["8. 建 Telegram bot 並連結（選用）"]
 ```
 
 ---
